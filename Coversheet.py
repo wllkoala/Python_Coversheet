@@ -6,7 +6,6 @@ from tkinter import Tk, filedialog, messagebox
 import pandas as pd
 from openpyxl import load_workbook
 from PyPDF4 import PdfFileReader, PdfFileWriter
-from prompt_toolkit.layout.margins import NumberedMargin
 from win32com.client import DispatchEx
 
 root = Tk()

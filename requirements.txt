@@ -1,0 +1,6 @@
+pandas
+openpyxl
+xlrd
+pillow
+pywin32
+pypdf4

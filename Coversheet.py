@@ -110,26 +110,28 @@ class AddCoverSheet():
         col_name = df.columns.values.tolist()
         print("需要生成封面文件数：", len(self.doc_codes))
         num = []
-        for n in range(len(self.doc_codes)):
-            if self.doc_codes[n] in df["供应商文件编码"].values:
+        for n, doc_code in enumerate(self.doc_codes):
+            if doc_code in df["供应商文件编码"].values:
                 doc_code_index = df[df["供应商文件编码"] ==
-                                    self.doc_codes[n]].index.tolist()
+                                    doc_code].index.tolist()
                 doc_data = df.iloc[doc_code_index].values[0]
                 wb = load_workbook("Coversheet.xlsx")
                 ws = wb["Tempdata"]
                 for i in range(len(doc_data)):
                     ws.cell(i+1, 1).value = col_name[i]
                     ws.cell(i+1, 2).value = doc_data[i]
-                file_name = os.path.join("tmp", self.doc_codes[n] + ".xlsx")
+                file_name = os.path.join("tmp", doc_code + ".xlsx")
                 wb.save(file_name)
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
-                print("文件封面已完成", self.doc_codes[n])
+                print("文件封面已完成", doc_code)
                 self.doc_codes[n] = os.path.join(
-                    self.file_dir, "input", self.doc_codes[n] + '.pdf')
+                    self.file_dir, "input", doc_code + '.pdf')
                 self.name_lists[n] = os.path.join(
                     self.file_dir, "input", self.name_lists[n])
             else:
                 num.append(n)
+                print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
+                print("文件信息未找到", doc_code)
                 continue
         for n in num:
             del self.doc_codes[n]

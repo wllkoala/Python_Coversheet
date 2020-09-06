@@ -16,7 +16,6 @@ class AddCoverSheet():
     name_lists = []
     doc_codes = []
     doc_revs = []
-    final_names = []
     file_lists = []
 
     def __init__(self, file_dir):
@@ -87,7 +86,7 @@ class AddCoverSheet():
         self.file_lists = list(zip(self.doc_codes, self.name_lists))
         for pdfnames in self.file_lists:
             output = PdfFileWriter()
-            for pdfname in pdfnames[0:2]:
+            for pdfname in pdfnames:
                 input = PdfFileReader(open(pdfname, "rb"), strict=False)
                 pageCount = input.getNumPages()
                 for iPage in range(0, pageCount):
@@ -150,7 +149,7 @@ if __name__ == "__main__":
         merge.start_to_run()
     except Exception as err:
         messagebox.showerror("Warning!", err)
-        with open("d:/error.pickle", "a") as f:
+        with open(os.path.join(os.getcwd(), "error.txt"), "w") as f:
             traceback.print_exc(file=f)
         print(err)
         exit()

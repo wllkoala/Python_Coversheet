@@ -110,9 +110,8 @@ class AddCoverSheet():
         print("需要生成封面文件数：", len(self.doc_codes))
         num = []
         for n, doc_code in enumerate(self.doc_codes):
-            if doc_code in df["供应商文件编码"].values:
-                doc_code_index = df[df["供应商文件编码"] ==
-                                    doc_code].index.tolist()
+            if doc_code in df.iloc[:, 0].values:
+                doc_code_index = df[df.iloc[:, 0] == doc_code].index.tolist()
                 doc_data = df.iloc[doc_code_index].values[0]
                 wb = load_workbook("Coversheet.xlsx")
                 ws = wb["Tempdata"]

@@ -131,10 +131,10 @@ class AddCoverSheet():
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
                 print("文件信息未找到", doc_code)
                 continue
-        for n in num:
-            del self.doc_codes[n]
-            del self.doc_revs[n]
-            del self.name_lists[n]
+        for i, n in enumerate(num):
+            del self.doc_codes[n-i]
+            del self.doc_revs[n-i]
+            del self.name_lists[n-i]
         print("=><=" * 25)
 
 

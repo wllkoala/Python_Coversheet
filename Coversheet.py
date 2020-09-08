@@ -105,8 +105,9 @@ class AddCoverSheet():
             title="Select the file", filetypes=[("All files", "*")])
         df = pd.read_excel(excel_file)
         df = df.dropna(axis=0, how='all')
+        df = df.fillna("NA")
         df = df.reset_index(drop=True)
-        col_name = df.columns.values.tolist()
+        col_names = df.columns.values.tolist()
         print("需要生成封面文件数：", len(self.doc_codes))
         num = []
         for n, doc_code in enumerate(self.doc_codes):
@@ -115,8 +116,8 @@ class AddCoverSheet():
                 doc_data = df.iloc[doc_code_index].values[0]
                 wb = load_workbook("Coversheet.xlsx")
                 ws = wb["Tempdata"]
-                for i in range(len(doc_data)):
-                    ws.cell(i+1, 1).value = col_name[i]
+                for i, col_name in enumerate(col_names):
+                    ws.cell(i+1, 1).value = col_name
                     ws.cell(i+1, 2).value = doc_data[i]
                 file_name = os.path.join("tmp", doc_code + ".xlsx")
                 wb.save(file_name)

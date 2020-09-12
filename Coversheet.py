@@ -8,15 +8,10 @@ from openpyxl import load_workbook
 from PyPDF4 import PdfFileReader, PdfFileWriter
 from win32com.client import DispatchEx
 
-root = Tk()
-root.withdraw()
-
 
 class AddCoverSheet():
     name_lists = []
     doc_codes = []
-    doc_revs = []
-    file_lists = []
 
     def __init__(self, file_dir):
         self.file_dir = file_dir
@@ -25,10 +20,15 @@ class AddCoverSheet():
         '''开始运行'''
         self.create_folder()
         self.get_name_lists()
+        qty = len(self.name_lists)
         self.cover_sheet()
         self.conversion()
         self.merge_doc()
-        messagebox.showinfo("Complete!", "全部文件已完成！")
+        if qty > len(self.name_lists):
+            messagebox.showwarning(
+                "Warning!", f"未完成文件数：{qty-len(self.name_lists)}")
+        else:
+            messagebox.showinfo("Complete!", "文件全部完成！")
 
     def create_folder(self):
         '''创建所需文件夹'''
@@ -38,10 +38,10 @@ class AddCoverSheet():
             os.mkdir("output")
         else:
             self.del_file("output")
-        if not os.path.exists("tmp"):
-            os.mkdir("tmp")
+        if not os.path.exists("temp"):
+            os.mkdir("temp")
         else:
-            self.del_file("tmp")
+            self.del_file("temp")
 
     def del_file(self, folder):
         '''删除已有文件'''
@@ -56,7 +56,6 @@ class AddCoverSheet():
             if name.endswith(".pdf"):
                 if name.find('_') > 0:
                     self.doc_codes.append(name.split("_")[0])
-                    self.doc_revs.append(name.split("_")[1][1:3])
                     self.name_lists.append(name)
                     print("需要添加封面的文件：", len(self.name_lists),
                           name.split(".")[0])
@@ -71,8 +70,7 @@ class AddCoverSheet():
             print('当前文件转换进度',
                   name_list_index + 1, "/", len(self.doc_codes))
             exportfile = name_list
-            filenames = exportfile.split('.')[0] + '.xlsx'
-            filename = filenames.replace("input", "tmp")
+            filename = exportfile.split('.')[0] + '.xlsx'
             books = xlApp.Workbooks.Open(filename, False)
             books.ExportAsFixedFormat(0, exportfile)
             books.Close(False)
@@ -83,15 +81,15 @@ class AddCoverSheet():
 
     def merge_doc(self):
         '''合并封面和文件'''
-        self.file_lists = list(zip(self.doc_codes, self.name_lists))
-        for pdfnames in self.file_lists:
+        file_lists = list(zip(self.doc_codes, self.name_lists))
+        for pdfnames in file_lists:
             output = PdfFileWriter()
             for pdfname in pdfnames:
                 input = PdfFileReader(open(pdfname, "rb"), strict=False)
                 pageCount = input.getNumPages()
                 for iPage in range(0, pageCount):
                     output.addPage(input.getPage(iPage))
-            pdfoutname = str(pdfnames[0]).replace("input", "output")
+            pdfoutname = str(pdfnames[1]).replace("input", "output")
             outputStream = open(pdfoutname, "wb")
             output.write(outputStream)
             outputStream.close()
@@ -105,7 +103,7 @@ class AddCoverSheet():
             title="Select the file", filetypes=[("All files", "*")])
         df = pd.read_excel(excel_file)
         df = df.dropna(axis=0, how='all')
-        df = df.fillna("NA")
+        df = df.fillna('')
         df = df.reset_index(drop=True)
         col_names = df.columns.values.tolist()
         print("需要生成封面文件数：", len(self.doc_codes))
@@ -119,12 +117,12 @@ class AddCoverSheet():
                 for i, col_name in enumerate(col_names):
                     ws.cell(i+1, 1).value = col_name
                     ws.cell(i+1, 2).value = doc_data[i]
-                file_name = os.path.join("tmp", doc_code + ".xlsx")
+                file_name = os.path.join("temp", doc_code + ".xlsx")
                 wb.save(file_name)
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
                 print("文件封面已完成", doc_code)
                 self.doc_codes[n] = os.path.join(
-                    self.file_dir, "input", doc_code + '.pdf')
+                    self.file_dir, "temp", doc_code + '.pdf')
                 self.name_lists[n] = os.path.join(
                     self.file_dir, "input", self.name_lists[n])
             else:
@@ -134,13 +132,14 @@ class AddCoverSheet():
                 continue
         for i, n in enumerate(num):
             del self.doc_codes[n-i]
-            del self.doc_revs[n-i]
             del self.name_lists[n-i]
         print("=><=" * 25)
 
 
 if __name__ == "__main__":
     try:
+        root = Tk()
+        root.withdraw()
         file_dir = os.getcwd()
         print("=><=" * 25)
         print("当前路径：", file_dir)

@@ -25,8 +25,8 @@ class AddCoverSheet():
         self.conversion()
         self.merge_doc()
         if qty > len(self.name_lists):
-            messagebox.showwarning(
-                "Warning!", f"未完成文件数：{qty-len(self.name_lists)}")
+            messagebox.showwarning("Warning!",
+                                   f"未完成文件数：{qty-len(self.name_lists)}")
         else:
             messagebox.showinfo("Complete!", "文件全部完成！")
 
@@ -67,8 +67,7 @@ class AddCoverSheet():
         xlApp.Visible = False
         xlApp.DisplayAlerts = 0
         for name_list_index, name_list in enumerate(self.doc_codes):
-            print('当前文件转换进度',
-                  name_list_index + 1, "/", len(self.doc_codes))
+            print('当前文件转换进度', name_list_index + 1, "/", len(self.doc_codes))
             exportfile = name_list
             filename = exportfile.split('.')[0] + '.xlsx'
             books = xlApp.Workbooks.Open(filename, False)
@@ -99,8 +98,8 @@ class AddCoverSheet():
 
     def cover_sheet(self):
         '''生成excel版封面'''
-        excel_file = filedialog.askopenfilename(
-            title="Select the file", filetypes=[("All files", "*")])
+        excel_file = filedialog.askopenfilename(title="Select the file",
+                                                filetypes=[("All files", "*")])
         df = pd.read_excel(excel_file)
         df = df.dropna(axis=0, how='all')
         df = df.fillna('')
@@ -115,24 +114,24 @@ class AddCoverSheet():
                 wb = load_workbook("Coversheet.xlsx")
                 ws = wb["Tempdata"]
                 for i, col_name in enumerate(col_names):
-                    ws.cell(i+1, 1).value = col_name
-                    ws.cell(i+1, 2).value = doc_data[i]
+                    ws.cell(i + 1, 1).value = col_name
+                    ws.cell(i + 1, 2).value = doc_data[i]
                 file_name = os.path.join("temp", doc_code + ".xlsx")
                 wb.save(file_name)
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
                 print("文件封面已完成", doc_code)
-                self.doc_codes[n] = os.path.join(
-                    self.file_dir, "temp", doc_code + '.pdf')
-                self.name_lists[n] = os.path.join(
-                    self.file_dir, "input", self.name_lists[n])
+                self.doc_codes[n] = os.path.join(self.file_dir, "temp",
+                                                 doc_code + '.pdf')
+                self.name_lists[n] = os.path.join(self.file_dir, "input",
+                                                  self.name_lists[n])
             else:
                 num.append(n)
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
                 print("文件信息未找到", doc_code)
                 continue
         for i, n in enumerate(num):
-            del self.doc_codes[n-i]
-            del self.name_lists[n-i]
+            del self.doc_codes[n - i]
+            del self.name_lists[n - i]
         print("=><=" * 25)
 
 

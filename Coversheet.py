@@ -1,4 +1,5 @@
 import os
+import shutil
 import traceback
 from sys import exit
 from tkinter import Tk, filedialog, messagebox
@@ -29,6 +30,7 @@ class AddCoverSheet():
                                    f"未完成文件数：{qty-len(self.name_lists)}")
         else:
             messagebox.showinfo("Complete!", "文件全部完成！")
+        shutil.rmtree('temp')
 
     def create_folder(self):
         '''创建所需文件夹'''
@@ -84,14 +86,13 @@ class AddCoverSheet():
         for pdfnames in file_lists:
             output = PdfFileWriter()
             for pdfname in pdfnames:
-                input = PdfFileReader(open(pdfname, "rb"), strict=False)
+                input = PdfFileReader(pdfname, strict=False)
                 pageCount = input.getNumPages()
                 for iPage in range(0, pageCount):
                     output.addPage(input.getPage(iPage))
             pdfoutname = str(pdfnames[1]).replace("input", "output")
-            outputStream = open(pdfoutname, "wb")
-            output.write(outputStream)
-            outputStream.close()
+            with open(pdfoutname, "wb") as pdfout:
+                output.write(pdfout)
             print("文件合并完成：", pdfoutname)
         print("文件合并完成！")
         print("=><=" * 25)

@@ -26,7 +26,8 @@ class AddCoverSheet:
         self.conversion()
         self.merge_doc()
         if qty > len(self.name_lists):
-            messagebox.showwarning("Warning!", f"未完成文件数：{qty-len(self.name_lists)}")
+            messagebox.showwarning(
+                "Warning!", f"未完成文件数：{qty-len(self.name_lists)}")
         else:
             messagebox.showinfo("Complete!", "文件全部完成！")
         shutil.rmtree("temp")
@@ -58,7 +59,8 @@ class AddCoverSheet:
                 if name.find("_") > 0:
                     self.doc_codes.append(name.split("_")[0])
                     self.name_lists.append(name)
-                    print("需要添加封面的文件：", len(self.name_lists), name.split(".")[0])
+                    print("需要添加封面的文件：", len(self.name_lists),
+                          name.split(".")[0])
         print("=><=" * 25)
 
     def conversion(self):
@@ -98,8 +100,7 @@ class AddCoverSheet:
     def cover_sheet(self):
         """生成excel版封面"""
         excel_file = filedialog.askopenfilename(
-            title="Select the file", filetypes=[("All files", "*")]
-        )
+            title="Select the file", filetypes=[("All files", "*")])
         df = pd.read_excel(excel_file)
         df = df.dropna(axis=0, how="all")
         df = df.fillna("")
@@ -121,11 +122,9 @@ class AddCoverSheet:
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
                 print("文件封面已完成", doc_code)
                 self.doc_codes[n] = os.path.join(
-                    self.file_dir, "temp", doc_code + ".pdf"
-                )
+                    self.file_dir, "temp", doc_code + ".pdf")
                 self.name_lists[n] = os.path.join(
-                    self.file_dir, "input", self.name_lists[n]
-                )
+                    self.file_dir, "input", self.name_lists[n])
             else:
                 num.append(n)
                 print("当前封面生成进度：", n + 1, "/", len(self.doc_codes))
